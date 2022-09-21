@@ -92,13 +92,19 @@ export const CartContent = styled('div', {
     lineHeight: 1.6,
     marginTop: '1.5rem',
   },
+
+  '> div': {
+    overflowY: 'auto',
+    margin: '1.5rem 0 0.5rem',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1.5rem',
+  },
 });
 
 export const CartCardItem = styled('div', {
   display: 'flex',
   gap: '1.25rem',
-  marginTop: '2rem',
-  overflowY: 'auto',
 });
 
 export const ImageContainer = styled('div', {
@@ -177,4 +183,32 @@ export const CartItemSumary = styled('table', {
   'tfoot tr td:nth-child(2)': {
     fontSize: '$xl',
   },
+});
+
+export const ButtonSubmitCheckout = styled('button', {
+  marginTop: '3rem',
+  backgroundColor: '$green500',
+  border: 0,
+  color: '$white',
+  borderRadius: 8,
+  padding: '1.25rem',
+  cursor: 'pointer',
+  fontWeight: 'bold',
+  fontSize: '$md',
+
+  '&:disabled': {
+    opacity: 0.6,
+    cursor: 'not-allowed',
+  },
+
+  '&:not(:disabled):hover': {
+    backgroundColor: '$green300',
+  },
+});
+
+export const Overlay = styled('div', {
+  // background: '$gray100',
+  position: 'fixed',
+  inset: 0,
+  zIndex: 9,
 });

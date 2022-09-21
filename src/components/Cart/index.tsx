@@ -3,6 +3,7 @@ import { Handbag, X } from 'phosphor-react';
 import { useState } from 'react';
 import { theme } from '../../styles';
 import {
+  ButtonSubmitCheckout,
   CartButtonClose,
   CartButtonOpen,
   CartCardItem,
@@ -11,6 +12,7 @@ import {
   CartItemSumary,
   ImageContainer,
   ItemDetails,
+  Overlay,
 } from '../../styles/components/cart';
 
 export function Cart() {
@@ -28,41 +30,61 @@ export function Cart() {
       </CartButtonOpen>
 
       {showCart && (
-        <CartContent>
-          <CartButtonClose onClick={handleToggleShowCart}>
-            <X size={24} weight="bold" />
-          </CartButtonClose>
+        <>
+          <CartContent>
+            <CartButtonClose onClick={handleToggleShowCart}>
+              <X size={24} weight="bold" />
+            </CartButtonClose>
 
-          <strong>Sacola de compras</strong>
+            <strong>Sacola de compras</strong>
 
-          <CartCardItem>
-            <ImageContainer></ImageContainer>
-            <ItemDetails>
-              <h1>Camiseta Beyond the Limits</h1>
-              <span>R$ 79,90</span>
-              <button>Remover</button>
-            </ItemDetails>
-          </CartCardItem>
+            <div>
+              <CartCardItem>
+                <ImageContainer></ImageContainer>
+                <ItemDetails>
+                  <h1>Camiseta Beyond the Limits</h1>
+                  <span>R$ 79,90</span>
+                  <button>Remover</button>
+                </ItemDetails>
+              </CartCardItem>
 
-          <CartItemSumary>
-            <tbody>
-              <tr>
-                <td>Total de itens</td>
-                <td>R$ 79,90</td>
-              </tr>
-              {/* <tr>
-              <td>Entrega</td>
-              <td>{priceFormatter.format(deliveryFee)}</td>
-            </tr> */}
-            </tbody>
-            <tfoot>
-              <tr>
-                <td>Valor Total</td>
-                <td>R$ 79,90</td>
-              </tr>
-            </tfoot>
-          </CartItemSumary>
-        </CartContent>
+              <CartCardItem>
+                <ImageContainer></ImageContainer>
+                <ItemDetails>
+                  <h1>Camiseta Beyond the Limits</h1>
+                  <span>R$ 79,90</span>
+                  <button>Remover</button>
+                </ItemDetails>
+              </CartCardItem>
+
+              <CartCardItem>
+                <ImageContainer></ImageContainer>
+                <ItemDetails>
+                  <h1>Camiseta Beyond the Limits</h1>
+                  <span>R$ 79,90</span>
+                  <button>Remover</button>
+                </ItemDetails>
+              </CartCardItem>
+            </div>
+
+            <CartItemSumary>
+              <tbody>
+                <tr>
+                  <td>Quantidade</td>
+                  <td>3 items</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td>Valor Total</td>
+                  <td>R$ 79,90</td>
+                </tr>
+              </tfoot>
+            </CartItemSumary>
+            <ButtonSubmitCheckout>Finalizar compra</ButtonSubmitCheckout>
+          </CartContent>
+          <Overlay />
+        </>
       )}
     </CartContainer>
   );
