@@ -6,6 +6,7 @@ import { useRouter } from 'next/router';
 import { useState } from 'react';
 import Stripe from 'stripe';
 import { useShoppingCart } from 'use-shopping-cart';
+import { Button } from '../../components/Button';
 import { stripe } from '../../lib/stripe';
 import {
   ImageContainer,
@@ -66,9 +67,9 @@ export default function Product({ product }: ProductProps) {
 
           <p>{product.description}</p>
 
-          <button disabled={isExists} onClick={handleBuyProduct}>
+          <Button disabled={isExists} onClick={handleBuyProduct}>
             {isExists ? 'Camiseta adicionada á sacola!' : 'Colocar na sacola'}
-          </button>
+          </Button>
         </ProductDetails>
       </ProductContainer>
     </>

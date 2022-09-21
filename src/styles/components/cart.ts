@@ -94,6 +94,10 @@ export const CartContent = styled('div', {
     marginTop: '1.5rem',
   },
 
+  '> button': {
+    marginTop: '3rem',
+  },
+
   '> div': {
     overflowY: 'auto',
     margin: '1.5rem 0 0.5rem',
@@ -184,27 +188,6 @@ export const CartItemSumary = styled('table', {
 
   'tfoot tr td:nth-child(2)': {
     fontSize: '$xl',
-  },
-});
-
-export const ButtonSubmitCheckout = styled('button', {
-  marginTop: '3rem',
-  backgroundColor: '$green500',
-  border: 0,
-  color: '$white',
-  borderRadius: 8,
-  padding: '1.25rem',
-  cursor: 'pointer',
-  fontWeight: 'bold',
-  fontSize: '$md',
-
-  '&:disabled': {
-    opacity: 0.6,
-    cursor: 'not-allowed',
-  },
-
-  '&:not(:disabled):hover': {
-    backgroundColor: '$green300',
   },
 });
 

@@ -7,7 +7,6 @@ import { useState } from 'react';
 import { useShoppingCart } from 'use-shopping-cart';
 
 import {
-  ButtonSubmitCheckout,
   CartButtonClose,
   CartButtonOpen,
   CartCardItem,
@@ -18,6 +17,7 @@ import {
   ItemDetails,
   Overlay,
 } from '../../styles/components/cart';
+import { Button } from '../Button';
 
 export function Cart() {
   const [showCart, setShowCart] = useState(false);
@@ -122,11 +122,11 @@ export function Cart() {
                 </tr>
               </tfoot>
             </CartItemSumary>
-            <ButtonSubmitCheckout
+            <Button
               onClick={handleBuyProduct}
               disabled={isCreatingCheckoutSession}>
               Finalizar compra
-            </ButtonSubmitCheckout>
+            </Button>
           </CartContent>
           <Overlay />
         </>
