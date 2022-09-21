@@ -12,6 +12,7 @@ import {
   ProductContainer,
   ProductDetails,
 } from '../../styles/pages/product';
+import { priceFormatter } from '../../utils/formatter';
 
 interface ProductProps {
   product: {
@@ -25,43 +26,27 @@ interface ProductProps {
 }
 
 export default function Product({ product }: ProductProps) {
-  const [isCreatingCheckoutSession, setCreatingCheckoutSession] =
-    useState(false);
   const { isFallback } = useRouter();
+  const { addItem, cartDetails } = useShoppingCart();
 
-  const { addItem } = useShoppingCart();
+  const isExists = Object.values(cartDetails).some(
+    (item) => item.id === product.id,
+  );
+
+  async function handleBuyProduct() {
+    const newProduct = {
+      ...product,
+      sku: product.defaultPriceId,
+      price: product.price,
+      currency: 'BRL',
+    };
+
+    addItem(newProduct);
+  }
 
   //  fallback: true
   if (isFallback) {
     return <p>Loading...</p>;
-  }
-
-  async function handleBuyProduct() {
-    try {
-      setCreatingCheckoutSession(true);
-
-      const newProduct = {
-        ...product,
-        sku: product.defaultPriceId,
-        price: product.price,
-        currency: 'BRL',
-      };
-
-      addItem(newProduct);
-
-      // const response = await axios.post('/api/checkout', {
-      //   priceId: product.defaultPriceId,
-      // });
-
-      // const { checkoutUrl } = response.data;
-
-      // window.location.href = checkoutUrl;
-      setCreatingCheckoutSession(false);
-    } catch (error) {
-      setCreatingCheckoutSession(false);
-      // Conectar com uma ferramenta de onservabilidade (Datadog / Sentry)
-      alert('Fala ao redirecionar ao checkout!');
-    }
   }
 
   return (
@@ -77,19 +62,12 @@ export default function Product({ product }: ProductProps) {
 
         <ProductDetails>
           <h1>{product.name}</h1>
-          <span>
-            {new Intl.NumberFormat('pt-BR', {
-              style: 'currency',
-              currency: 'BRL',
-            }).format(product.price / 100)}
-          </span>
+          <span>{priceFormatter.format(product.price / 100)}</span>
 
           <p>{product.description}</p>
 
-          <button
-            disabled={isCreatingCheckoutSession}
-            onClick={handleBuyProduct}>
-            Comprar agora
+          <button disabled={isExists} onClick={handleBuyProduct}>
+            {isExists ? 'Camiseta adicionada á sacola!' : 'Colocar na sacola'}
           </button>
         </ProductDetails>
       </ProductContainer>
@@ -122,10 +100,6 @@ export const getStaticProps: GetStaticProps<any, { id: string }> = async ({
         name: product.name,
         imageUrl: product.images[0],
         price: price.unit_amount,
-        // price: new Intl.NumberFormat('pt-BR', {
-        //   style: 'currency',
-        //   currency: 'BRL',
-        // }).format(price.unit_amount / 100),
         description: product.description,
         defaultPriceId: price.id,
       },

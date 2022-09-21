@@ -54,3 +54,36 @@ export const ImageContainer = styled('div', {
     objectFit: 'cover',
   },
 });
+
+export const ImageContainerGrid = styled('div', {
+  display: 'flex',
+  alignContent: 'center',
+  alignItems: 'center',
+  marginTop: '4rem',
+});
+
+export const ImageGrid = styled('div', {
+  width: '140px',
+  height: '140px',
+
+  background: 'linear-gradient(180deg, #1ea483 0%, #7465d4 100%)',
+  boxShadow: '0px 0px 60px rgba(0, 0, 0, 0.8)',
+  borderRadius: '1000px',
+
+  display: 'flex',
+  alignContent: 'center',
+  justifyContent: 'center',
+  transition: 'transform 0.5s',
+
+  img: {
+    objectFit: 'cover',
+  },
+
+  '& + div': {
+    marginLeft: '-3rem',
+  },
+
+  '&:hover': {
+    transform: 'translateY(-1rem)',
+  },
+});

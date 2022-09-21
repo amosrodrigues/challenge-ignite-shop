@@ -13,7 +13,7 @@ globalStyles();
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <Container>
-      <CartProvider cartMode="checkout-session" stripe="" currency="USD">
+      <CartProvider cartMode="checkout-session" stripe="" currency="BRL">
         <Header>
           <Link href="/" prefetch={false} passHref>
             <a>

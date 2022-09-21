@@ -24,6 +24,7 @@ export const CartButtonOpen = styled('button', {
   },
 
   '&:disabled': {
+    cursor: 'not-allowed',
     svg: {
       color: '$gray700',
     },
@@ -105,6 +106,7 @@ export const CartContent = styled('div', {
 export const CartCardItem = styled('div', {
   display: 'flex',
   gap: '1.25rem',
+  height: '6.125rem',
 });
 
 export const ImageContainer = styled('div', {
@@ -207,7 +209,6 @@ export const ButtonSubmitCheckout = styled('button', {
 });
 
 export const Overlay = styled('div', {
-  // background: '$gray100',
   position: 'fixed',
   inset: 0,
   zIndex: 9,

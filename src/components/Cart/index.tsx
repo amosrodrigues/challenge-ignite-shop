@@ -1,9 +1,11 @@
+import axios from 'axios';
 import Image from 'next/image';
-import Link from 'next/link';
+import { useRouter } from 'next/router';
+
 import { Handbag, X } from 'phosphor-react';
 import { useState } from 'react';
 import { useShoppingCart } from 'use-shopping-cart';
-import { theme } from '../../styles';
+
 import {
   ButtonSubmitCheckout,
   CartButtonClose,
@@ -20,22 +22,57 @@ import {
 export function Cart() {
   const [showCart, setShowCart] = useState(false);
 
+  const [isCreatingCheckoutSession, setCreatingCheckoutSession] =
+    useState(false);
+
+  const { asPath } = useRouter();
+
   const cart = useShoppingCart();
-  const { removeItem, cartDetails, clearCart, formattedTotalPrice } = cart;
+  const { removeItem, cartDetails, clearCart, formattedTotalPrice, cartCount } =
+    cart;
 
-  const cartEntries = Object.values(cartDetails ?? {}).map((entry) => entry);
+  const cartEntries = Object.values(cartDetails).filter(Boolean);
 
-  console.log(cartEntries);
+  const products = cartEntries.map((item) => ({
+    price: item.defaultPriceId,
+    quantity: item.quantity,
+  }));
 
   function handleToggleShowCart() {
     setShowCart(!showCart);
   }
 
+  async function handleBuyProduct() {
+    try {
+      setCreatingCheckoutSession(true);
+
+      const response = await axios.post('/api/checkout', {
+        products,
+      });
+
+      const { checkoutUrl } = response.data;
+
+      window.location.href = checkoutUrl;
+      setCreatingCheckoutSession(false);
+      clearCart();
+    } catch (error) {
+      setCreatingCheckoutSession(false);
+      // Conectar com uma ferramenta de onservabilidade (Datadog / Sentry)
+      alert('Fala ao redirecionar ao checkout!');
+    }
+  }
+
+  const isRenderCart = asPath.includes('success');
+
+  if (isRenderCart) {
+    return null;
+  }
+
   return (
     <CartContainer>
-      <CartButtonOpen onClick={handleToggleShowCart} disabled={false}>
+      <CartButtonOpen onClick={handleToggleShowCart} disabled={cartCount === 0}>
         <Handbag size={24} />
-        <span>1</span>
+        {cartCount > 0 && <span>{cartCount}</span>}
       </CartButtonOpen>
 
       {showCart && (
@@ -54,20 +91,16 @@ export function Cart() {
                     <Image
                       src={entry.imageUrl}
                       width={200}
-                      height={200}
+                      height={220}
                       alt=""
                     />
                   </ImageContainer>
                   <ItemDetails>
                     <h1>{entry.name}</h1>
-                    <span>
-                      {' '}
-                      {new Intl.NumberFormat('pt-BR', {
-                        style: 'currency',
-                        currency: 'BRL',
-                      }).format(entry.price / 100)}
-                    </span>
-                    <button>Remover</button>
+                    <span>{entry.formattedValue} </span>
+                    <button onClick={() => removeItem(entry.id)}>
+                      Remover
+                    </button>
                   </ItemDetails>
                 </CartCardItem>
               ))}
@@ -77,17 +110,21 @@ export function Cart() {
               <tbody>
                 <tr>
                   <td>Quantidade</td>
-                  <td>3 items</td>
+                  <td>
+                    {cartCount} {cartCount === 1 ? 'item' : 'items'}
+                  </td>
                 </tr>
               </tbody>
               <tfoot>
                 <tr>
                   <td>Valor Total</td>
-                  <td>R$ 79,90</td>
+                  <td>{formattedTotalPrice}</td>
                 </tr>
               </tfoot>
             </CartItemSumary>
-            <ButtonSubmitCheckout onClick={() => clearCart()}>
+            <ButtonSubmitCheckout
+              onClick={handleBuyProduct}
+              disabled={isCreatingCheckoutSession}>
               Finalizar compra
             </ButtonSubmitCheckout>
           </CartContent>
