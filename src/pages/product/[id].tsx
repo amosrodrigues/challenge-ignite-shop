@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import Stripe from 'stripe';
+import { useShoppingCart } from 'use-shopping-cart';
 import { stripe } from '../../lib/stripe';
 import {
   ImageContainer,
@@ -17,7 +18,7 @@ interface ProductProps {
     id: string;
     name: string;
     imageUrl: string;
-    price: string;
+    price: number;
     description: string;
     defaultPriceId: string;
   };
@@ -28,6 +29,8 @@ export default function Product({ product }: ProductProps) {
     useState(false);
   const { isFallback } = useRouter();
 
+  const { addItem } = useShoppingCart();
+
   //  fallback: true
   if (isFallback) {
     return <p>Loading...</p>;
@@ -37,13 +40,23 @@ export default function Product({ product }: ProductProps) {
     try {
       setCreatingCheckoutSession(true);
 
-      const response = await axios.post('/api/checkout', {
-        priceId: product.defaultPriceId,
-      });
+      const newProduct = {
+        ...product,
+        sku: product.defaultPriceId,
+        price: product.price,
+        currency: 'BRL',
+      };
 
-      const { checkoutUrl } = response.data;
+      addItem(newProduct);
 
-      window.location.href = checkoutUrl;
+      // const response = await axios.post('/api/checkout', {
+      //   priceId: product.defaultPriceId,
+      // });
+
+      // const { checkoutUrl } = response.data;
+
+      // window.location.href = checkoutUrl;
+      setCreatingCheckoutSession(false);
     } catch (error) {
       setCreatingCheckoutSession(false);
       // Conectar com uma ferramenta de onservabilidade (Datadog / Sentry)
@@ -64,7 +77,12 @@ export default function Product({ product }: ProductProps) {
 
         <ProductDetails>
           <h1>{product.name}</h1>
-          <span>{product.price}</span>
+          <span>
+            {new Intl.NumberFormat('pt-BR', {
+              style: 'currency',
+              currency: 'BRL',
+            }).format(product.price / 100)}
+          </span>
 
           <p>{product.description}</p>
 
@@ -103,10 +121,11 @@ export const getStaticProps: GetStaticProps<any, { id: string }> = async ({
         id: product.id,
         name: product.name,
         imageUrl: product.images[0],
-        price: new Intl.NumberFormat('pt-BR', {
-          style: 'currency',
-          currency: 'BRL',
-        }).format(price.unit_amount / 100),
+        price: price.unit_amount,
+        // price: new Intl.NumberFormat('pt-BR', {
+        //   style: 'currency',
+        //   currency: 'BRL',
+        // }).format(price.unit_amount / 100),
         description: product.description,
         defaultPriceId: price.id,
       },

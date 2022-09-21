@@ -1,6 +1,8 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { Handbag, X } from 'phosphor-react';
 import { useState } from 'react';
+import { useShoppingCart } from 'use-shopping-cart';
 import { theme } from '../../styles';
 import {
   ButtonSubmitCheckout,
@@ -17,6 +19,13 @@ import {
 
 export function Cart() {
   const [showCart, setShowCart] = useState(false);
+
+  const cart = useShoppingCart();
+  const { removeItem, cartDetails, clearCart, formattedTotalPrice } = cart;
+
+  const cartEntries = Object.values(cartDetails ?? {}).map((entry) => entry);
+
+  console.log(cartEntries);
 
   function handleToggleShowCart() {
     setShowCart(!showCart);
@@ -39,32 +48,29 @@ export function Cart() {
             <strong>Sacola de compras</strong>
 
             <div>
-              <CartCardItem>
-                <ImageContainer></ImageContainer>
-                <ItemDetails>
-                  <h1>Camiseta Beyond the Limits</h1>
-                  <span>R$ 79,90</span>
-                  <button>Remover</button>
-                </ItemDetails>
-              </CartCardItem>
-
-              <CartCardItem>
-                <ImageContainer></ImageContainer>
-                <ItemDetails>
-                  <h1>Camiseta Beyond the Limits</h1>
-                  <span>R$ 79,90</span>
-                  <button>Remover</button>
-                </ItemDetails>
-              </CartCardItem>
-
-              <CartCardItem>
-                <ImageContainer></ImageContainer>
-                <ItemDetails>
-                  <h1>Camiseta Beyond the Limits</h1>
-                  <span>R$ 79,90</span>
-                  <button>Remover</button>
-                </ItemDetails>
-              </CartCardItem>
+              {cartEntries.map((entry) => (
+                <CartCardItem key={entry.id}>
+                  <ImageContainer>
+                    <Image
+                      src={entry.imageUrl}
+                      width={200}
+                      height={200}
+                      alt=""
+                    />
+                  </ImageContainer>
+                  <ItemDetails>
+                    <h1>{entry.name}</h1>
+                    <span>
+                      {' '}
+                      {new Intl.NumberFormat('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL',
+                      }).format(entry.price / 100)}
+                    </span>
+                    <button>Remover</button>
+                  </ItemDetails>
+                </CartCardItem>
+              ))}
             </div>
 
             <CartItemSumary>
@@ -81,7 +87,9 @@ export function Cart() {
                 </tr>
               </tfoot>
             </CartItemSumary>
-            <ButtonSubmitCheckout>Finalizar compra</ButtonSubmitCheckout>
+            <ButtonSubmitCheckout onClick={() => clearCart()}>
+              Finalizar compra
+            </ButtonSubmitCheckout>
           </CartContent>
           <Overlay />
         </>
