@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 
 import { Handbag, X } from 'phosphor-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useShoppingCart } from 'use-shopping-cart';
 
 import {
@@ -54,7 +54,6 @@ export function Cart() {
 
       window.location.href = checkoutUrl;
       setCreatingCheckoutSession(false);
-      clearCart();
     } catch (error) {
       setCreatingCheckoutSession(false);
       // Conectar com uma ferramenta de onservabilidade (Datadog / Sentry)
@@ -65,6 +64,9 @@ export function Cart() {
   const isRenderCart = asPath.includes('success');
 
   if (isRenderCart) {
+    if (cartCount > 0) {
+      clearCart();
+    }
     return null;
   }
 
