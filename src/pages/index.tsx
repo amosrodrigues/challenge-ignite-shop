@@ -1,4 +1,9 @@
-import { HomeContainer, Product } from '../styles/pages/home';
+import {
+  CartButton,
+  HomeContainer,
+  Product,
+  ProductInfo,
+} from '../styles/pages/home';
 import { useKeenSlider } from 'keen-slider/react';
 import { GetStaticProps } from 'next';
 import { stripe } from '../lib/stripe';
@@ -9,23 +14,57 @@ import Head from 'next/head';
 
 import 'keen-slider/keen-slider.min.css';
 import Stripe from 'stripe';
+import { Handbag } from 'phosphor-react';
+import { useShoppingCart } from 'use-shopping-cart';
+import { priceFormatter } from '../utils/formatter';
+
+interface Product {
+  id: string;
+  name: string;
+  imageUrl: string;
+  price: number;
+  description: string;
+  defaultPriceId: string;
+}
 
 interface HomeProps {
-  products: {
-    id: string;
-    name: string;
-    imageUrl: string;
-    price: string;
-  }[];
+  products: Product[];
 }
 
 export default function Home({ products }: HomeProps) {
   const [sliderRef] = useKeenSlider({
     slides: {
-      perView: 3,
+      perView: 2,
       spacing: 48,
     },
   });
+
+  const { addItem, cartDetails, removeItem } = useShoppingCart();
+
+  function handleProductExist(productId: string) {
+    const isExists = Object.values(cartDetails).some(
+      (item) => item.id === productId,
+    );
+
+    return isExists;
+  }
+
+  async function handleBuyProduct(product: Product) {
+    const isExists = handleProductExist(product.id);
+
+    const newProduct = {
+      ...product,
+      sku: product.defaultPriceId,
+      price: product.price,
+      currency: 'BRL',
+    };
+
+    if (isExists) {
+      removeItem(product.id);
+    } else {
+      addItem(newProduct);
+    }
+  }
 
   return (
     <>
@@ -35,18 +74,23 @@ export default function Home({ products }: HomeProps) {
 
       <HomeContainer ref={sliderRef} className="keen-slider">
         {products.map((product) => (
-          <Link
-            key={product.id}
-            href={`/product/${product.id}`}
-            prefetch={false}>
-            <Product className="keen-slider__slide">
+          <Product className="keen-slider__slide" key={product.id}>
+            <Link href={`/product/${product.id}`} prefetch={false}>
               <Image src={product.imageUrl} width={520} height={480} alt="" />
-              <footer>
+            </Link>
+            <footer>
+              <ProductInfo>
                 <strong>{product.name}</strong>
-                <span>{product.price}</span>
-              </footer>
-            </Product>
-          </Link>
+                <span>{priceFormatter.format(product.price / 100)}</span>
+              </ProductInfo>
+              <CartButton onClick={() => handleBuyProduct(product)}>
+                <Handbag
+                  size={24}
+                  weight={handleProductExist(product.id) ? 'fill' : 'bold'}
+                />
+              </CartButton>
+            </footer>
+          </Product>
         ))}
       </HomeContainer>
     </>
@@ -65,10 +109,9 @@ export const getStaticProps: GetStaticProps = async () => {
       id: product.id,
       name: product.name,
       imageUrl: product.images[0],
-      price: new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-      }).format(price.unit_amount / 100),
+      price: price.unit_amount,
+      description: product.description,
+      defaultPriceId: price.id,
     };
   });
 

@@ -71,7 +71,7 @@ export function Cart() {
   return (
     <CartContainer>
       <CartButtonOpen onClick={handleToggleShowCart} disabled={cartCount === 0}>
-        <Handbag size={24} />
+        <Handbag size={24} weight="bold" />
         {cartCount > 0 && <span>{cartCount}</span>}
       </CartButtonOpen>
 
