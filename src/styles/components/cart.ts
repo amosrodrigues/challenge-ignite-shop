@@ -58,12 +58,16 @@ export const CartButtonClose = styled('button', {
   lineHeight: 0,
   padding: 0,
   position: 'absolute',
-  top: '1.5rem',
+  top: '-1.5rem',
   right: '1.5rem',
 
   background: 'transparent',
   color: '$gray700',
   cursor: 'pointer',
+
+  '&:hover': {
+    color: '$gray300',
+  },
 });
 
 const moveToLeft = keyframes({
